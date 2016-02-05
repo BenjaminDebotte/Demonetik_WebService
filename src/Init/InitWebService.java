@@ -1,7 +1,10 @@
-package Init;
+package init;
 
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
+
+import Modele.Transaction;
+import Modele.TransactionDao;
 
 public class InitWebService implements ServletContextListener{
 
@@ -17,7 +20,14 @@ public class InitWebService implements ServletContextListener{
 
 	
 	public void contextInitialized(ServletContextEvent arg0) {
-		// TODO Auto-generated method stub
+		System.out.println("INIT du Web Service Demonetik");
+		
+		TransactionDao transDao = TransactionDao.getInstance();
+		
+		transDao.setWorkingTransaction(new Transaction());
+		
+		
+
 		
 	}
 

@@ -6,7 +6,8 @@ public class EtatTransaction {
 	private String labelEtat;
 	
 	public EtatTransaction() {
-		
+		numEtat = 0;
+		labelEtat = "Nouvelle transaction";
 	}
 
 	public EtatTransaction(int _numEtat, String _labelEtat){

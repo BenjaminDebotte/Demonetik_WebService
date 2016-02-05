@@ -1,4 +1,4 @@
-package Ressources;
+package resources;
 
 public class PorteurResources {
 

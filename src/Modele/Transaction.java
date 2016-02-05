@@ -8,7 +8,10 @@ public class Transaction {
 	private Porteur porteurTransaction;
 	
 	public Transaction() {
-		
+		numTransaction = 0;
+		etat = new EtatTransaction();
+		montant = 0;
+		porteurTransaction = new Porteur();
 	}
 	
 	public Transaction(int _numTransaction, EtatTransaction _etat, int montant, Porteur porteurTransaction) {

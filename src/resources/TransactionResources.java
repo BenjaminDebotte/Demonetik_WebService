@@ -1,4 +1,4 @@
-package Ressources;
+package resources;
 
 import java.util.LinkedList;
 
@@ -11,6 +11,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Request;
 import javax.ws.rs.core.UriInfo;
 
+import Modele.EtatTransaction;
 import Modele.Transaction;
 import Modele.TransactionDao;
 
@@ -35,31 +36,24 @@ public class TransactionResources {
 		
 		System.out.println("Initiation d'une nouvelle transaction");
 		
-		TransactionDao transDao = TransactionDao.getInstance();
-		
-		//transDao.getLastTransaction();
-		
-		System.out.println();
-		
-		
+		TransactionDao.getInstance().getWorkingTransaction().setEtat(new EtatTransaction(1, "Transaction init"));
+				
 		return "Ok";
 	}
 	
 	@GET
 	@Path("/getTransaction")
-	@Produces(MediaType.TEXT_PLAIN)
+	@Produces(MediaType.APPLICATION_JSON)
 	public Transaction getTransaction(){
 		
 		System.out.println("Modification d'etat transaction");
 		
 		TransactionDao transDao = TransactionDao.getInstance();
 		
-		Transaction trans = transDao.getLastTransaction();
-		
-		System.out.println(trans);
+		System.out.println(transDao.getWorkingTransaction());
 		
 		
-		return trans;
+		return transDao.getWorkingTransaction();
 	}
 	
 	@GET
@@ -78,31 +72,25 @@ public class TransactionResources {
 		
 		System.out.println("Demande d'etat transaction");
 		
-		TransactionDao transDao = TransactionDao.getInstance();
+		TransactionDao transDao = TransactionDao.getInstance();	
 		
-		Transaction trans = transDao.getLastTransaction();
-		
-		System.out.println(trans);
-		
-		
-		return trans.getEtat()+"";
+		return transDao.getWorkingTransaction().getEtat().getLabelEtat();
 	}
 	
 	@GET
-	@Path("/setEtat")
+	@Path("/setEtat/{etat}")
 	@Produces(MediaType.TEXT_PLAIN)
-	public String setEtat(){
+	public String setEtat(@PathParam("etat") String etat){
 		
 		System.out.println("Modification d'etat transaction");
 		
 		TransactionDao transDao = TransactionDao.getInstance();
 		
-		Transaction trans = transDao.getLastTransaction();
+		transDao.getWorkingTransaction().setEtat(new EtatTransaction(1,etat));
 		
-		System.out.println(trans);
+		System.out.println(transDao.getWorkingTransaction().getEtat().getLabelEtat());
 		
-		
-		return trans.getEtat()+"";
+		return transDao.getWorkingTransaction().getEtat().getLabelEtat();
 	}
 	
 	@GET
@@ -113,13 +101,34 @@ public class TransactionResources {
 		System.out.println("Demande du montant de la transaction");
 		
 		TransactionDao transDao = TransactionDao.getInstance();
-		
-		Transaction trans = transDao.getLastTransaction();
-		
-		System.out.println(trans);
+	
 		
 		
-		return trans.getMontant()+"";
+		return transDao.getWorkingTransaction().getMontant()+"";
+	}
+	
+	@GET
+	@Path("/endTransaction")
+	public void endTransaction(){
+		
+		System.out.println("Transaction termin??");
+		
+		TransactionDao transDao = TransactionDao.getInstance();
+		
+		transDao.getWorkingTransaction().setEtat(new EtatTransaction(10, "Transaction termin??"));
+	
+	}
+	
+	@GET
+	@Path("/resetTransaction")
+	public void resetTransaction(){
+		
+		System.out.println("Transaction termin??");
+		
+		TransactionDao transDao = TransactionDao.getInstance();
+		
+		transDao.setWorkingTransaction(new Transaction());
+	
 	}
 	
 	

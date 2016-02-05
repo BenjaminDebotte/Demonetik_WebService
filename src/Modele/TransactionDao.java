@@ -5,11 +5,16 @@ package Modele;
 public class TransactionDao {
 
 	private static TransactionDao instance;
+	private Transaction workingTransaction;
+	
 	
 	public TransactionDao() {
-		// TODO Auto-generated constructor stub
+		
 	}
 	
+	public TransactionDao(Transaction _wt){
+		this.workingTransaction = _wt;
+	}
 	
 	public static TransactionDao getInstance(){
 		if(instance == null){
@@ -21,15 +26,13 @@ public class TransactionDao {
 	}
 	
 	
-	public Transaction getLastTransaction(){
-		
-		
-		return null;
+	public Transaction getWorkingTransaction(){
+			
+		return workingTransaction;
 	}
 	
-	public Transaction getTransactionById(){
+	public void setWorkingTransaction(Transaction _wt){
 		
-		
-		return null;
+		workingTransaction = _wt;
 	}
 }
