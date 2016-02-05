@@ -6,14 +6,18 @@ public class Porteur {
 	private String prenom;
 	private int plafond;
 	private int pin;
-	private int numCarte;
+	private double numCarte;
 	
 	
 	public Porteur(){
-		
+		nom = "Federer";
+		prenom = "Roger";
+		plafond = 1000000;
+		pin = 1234;
+		numCarte = 123467891234567.0;
 	}
 	
-	public Porteur(String _nom, String _prenom, int _plafond, int _numCarte) {
+	public Porteur(String _nom, String _prenom, int _plafond, double _numCarte) {
 		this.nom = _nom;
 		this.prenom = _prenom;
 		this.plafond = _plafond;
@@ -55,11 +59,11 @@ public class Porteur {
 		this.pin = pin;
 	}
 
-	public int getNumCarte() {
+	public double getNumCarte() {
 		return numCarte;
 	}
 
-	public void setNumCarte(int numCarte) {
+	public void setNumCarte(double numCarte) {
 		this.numCarte = numCarte;
 	}
 	

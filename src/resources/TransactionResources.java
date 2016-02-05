@@ -58,30 +58,48 @@ public class TransactionResources {
 		return transDao.getWorkingTransaction();
 	}
 	
-	@POST
+	/*@POST
 	@Path("/porteurTransaction")
 	@Produces(MediaType.TEXT_PLAIN)
-	public String porteurTransaction( String nom, int numCarte){
+	public String porteurTransaction( String nom, String prenom, int plafond, int pin, double numCarte){
 		
 		System.out.println("Modification porteur");
 		
 		TransactionDao transDao = TransactionDao.getInstance();
 		
-		Porteur tempP = transDao.getWorkingTransaction().getPorteurTransaction();
-	
-		tempP.setNom(nom);
-		tempP.setNumCarte(numCarte);
+		if(transDao.getWorkingTransaction() != null){
+			if(transDao.getWorkingTransaction().getPorteurTransaction() != null){
+				Porteur tempP = transDao.getWorkingTransaction().getPorteurTransaction();
+			
+				tempP.setNom(nom);
+				tempP.setPrenom(prenom);
+				tempP.setPin(pin);
+				tempP.setPlafond(plafond);
+				tempP.setNumCarte(numCarte);
+			}
+		}
 		
 		return "Ok porteur";
-	}
+	}*/
 	
 	@POST
 	@Path("/DemandeAuto")
 	@Produces(MediaType.TEXT_PLAIN)
 	public String demandeAutorisation( int pin ){
+		if(TransactionDao.getInstance().getWorkingTransaction() != null){
+			if(pin != 0){
+				TransactionDao.getInstance().getWorkingTransaction().setEtat(new EtatTransaction(1, "Transaction acceptée"));
+				return "Ok";
+			}
+			else{
+				TransactionDao.getInstance().getWorkingTransaction().setEtat(new EtatTransaction(1, "Transaction refusée"));
+				return "Ko";
+			}
+		}
+		else{
+			return null;
+		}
 		
-		
-		return "Ok";
 	}
 	
 	@GET
@@ -133,10 +151,9 @@ public class TransactionResources {
 		
 		System.out.println("Transaction termin??");
 		
-		TransactionDao transDao = TransactionDao.getInstance();
-		
-		transDao.getWorkingTransaction().setEtat(new EtatTransaction(10, "Transaction termin??"));
-	
+		if(TransactionDao.getInstance().getWorkingTransaction() != null){
+			TransactionDao.getInstance().getWorkingTransaction().setEtat(new EtatTransaction(10, "Transaction termin??"));
+		}
 		return "Transaction terminé";
 	}
 	
@@ -154,7 +171,6 @@ public class TransactionResources {
 		return "Transaction réinitialisé";
 	}
 	
-	
-	
+
 	
 }
