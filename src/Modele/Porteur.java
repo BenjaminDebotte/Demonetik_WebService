@@ -6,16 +6,18 @@ public class Porteur {
 	private String prenom;
 	private int plafond;
 	private int pin;
+	private int numCarte;
 	
 	
 	public Porteur(){
 		
 	}
 	
-	public Porteur(String _nom, String _prenom, int _plafond) {
+	public Porteur(String _nom, String _prenom, int _plafond, int _numCarte) {
 		this.nom = _nom;
 		this.prenom = _prenom;
 		this.plafond = _plafond;
+		this.numCarte = _numCarte;
 	}
 
 
@@ -44,7 +46,22 @@ public class Porteur {
 	public void setPlafond(int plafond) {
 		this.plafond = plafond;
 	}
-	
+
+	public int getPin() {
+		return pin;
+	}
+
+	public void setPin(int pin) {
+		this.pin = pin;
+	}
+
+	public int getNumCarte() {
+		return numCarte;
+	}
+
+	public void setNumCarte(int numCarte) {
+		this.numCarte = numCarte;
+	}
 	
 
 }

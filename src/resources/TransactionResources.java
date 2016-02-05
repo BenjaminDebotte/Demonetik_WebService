@@ -3,6 +3,7 @@ package resources;
 import java.util.LinkedList;
 
 import javax.ws.rs.GET;
+import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
@@ -12,6 +13,7 @@ import javax.ws.rs.core.Request;
 import javax.ws.rs.core.UriInfo;
 
 import Modele.EtatTransaction;
+import Modele.Porteur;
 import Modele.Transaction;
 import Modele.TransactionDao;
 
@@ -56,10 +58,27 @@ public class TransactionResources {
 		return transDao.getWorkingTransaction();
 	}
 	
-	@GET
-	@Path("/DemandeAuto/{pin}")
+	@POST
+	@Path("/porteurTransaction")
 	@Produces(MediaType.TEXT_PLAIN)
-	public String demandeAutorisation( @PathParam("pin") int pin ){
+	public String porteurTransaction( String nom, int numCarte){
+		
+		System.out.println("Modification porteur");
+		
+		TransactionDao transDao = TransactionDao.getInstance();
+		
+		Porteur tempP = transDao.getWorkingTransaction().getPorteurTransaction();
+	
+		tempP.setNom(nom);
+		tempP.setNumCarte(numCarte);
+		
+		return "Ok porteur";
+	}
+	
+	@POST
+	@Path("/DemandeAuto")
+	@Produces(MediaType.TEXT_PLAIN)
+	public String demandeAutorisation( int pin ){
 		
 		
 		return "Ok";
@@ -77,10 +96,10 @@ public class TransactionResources {
 		return transDao.getWorkingTransaction().getEtat().getLabelEtat();
 	}
 	
-	@GET
-	@Path("/setEtat/{etat}")
+	@POST
+	@Path("/setEtat")
 	@Produces(MediaType.TEXT_PLAIN)
-	public String setEtat(@PathParam("etat") String etat){
+	public String setEtat(String etat){
 		
 		System.out.println("Modification d'etat transaction");
 		
@@ -109,7 +128,8 @@ public class TransactionResources {
 	
 	@GET
 	@Path("/endTransaction")
-	public void endTransaction(){
+	@Produces(MediaType.TEXT_PLAIN)
+	public String endTransaction(){
 		
 		System.out.println("Transaction termin??");
 		
@@ -117,11 +137,13 @@ public class TransactionResources {
 		
 		transDao.getWorkingTransaction().setEtat(new EtatTransaction(10, "Transaction termin??"));
 	
+		return "Transaction terminé";
 	}
 	
 	@GET
 	@Path("/resetTransaction")
-	public void resetTransaction(){
+	@Produces(MediaType.TEXT_PLAIN)
+	public String resetTransaction(){
 		
 		System.out.println("Transaction termin??");
 		
@@ -129,7 +151,10 @@ public class TransactionResources {
 		
 		transDao.setWorkingTransaction(new Transaction());
 	
+		return "Transaction réinitialisé";
 	}
+	
+	
 	
 	
 }
