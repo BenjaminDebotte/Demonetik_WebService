@@ -2,6 +2,8 @@ package resources;
 
 import java.util.LinkedList;
 
+import javax.ws.rs.Consumes;
+import javax.ws.rs.FormParam;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
@@ -12,10 +14,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Request;
 import javax.ws.rs.core.UriInfo;
 
-import Modele.EtatTransaction;
-import Modele.Porteur;
-import Modele.Transaction;
-import Modele.TransactionDao;
+import Modele.*;
 
 
 @Path("/transaction")
@@ -38,17 +37,106 @@ public class TransactionResources {
 		
 		System.out.println("Initiation d'une nouvelle transaction");
 		
-		TransactionDao.getInstance().getWorkingTransaction().setEtat(new EtatTransaction(1, "Transaction init"));
+		TransactionDao.getInstance().getWorkingTransaction().init();
 				
-		return "Ok";
+		if(TransactionDao.getInstance().getWorkingTransaction().getEtat() instanceof EtatInit){
+			return "Initiation pris en compte";
+		}
+		else{
+			return "Erreur etat";
+		}
+	}
+	
+	@POST
+	@Path("/montant")
+	//@Consumes("text/plain")
+	@Produces(MediaType.TEXT_PLAIN)
+	public String montantTransaction(@FormParam("montant") int montant){
+				
+		System.out.println("Reception du montant de la transaction "+montant);
+		
+		try{
+				if(TransactionDao.getInstance().getWorkingTransaction() != null){
+					TransactionDao.getInstance().getWorkingTransaction().montant(montant);
+				}
+				if(TransactionDao.getInstance().getWorkingTransaction().getEtat() instanceof EtatMontant){
+					TransactionDao.getInstance().getWorkingTransaction().setMontant(montant);
+					return "Montant pris en compte";
+				}
+				else{
+					return "Erreur etat";
+				}
+		}
+		catch(Exception ex){
+			System.out.println(ex.getMessage());
+			return "Erreur";
+		}
+	}
+	
+	@POST
+	@Path("/infoporteur")
+	@Produces(MediaType.TEXT_PLAIN)
+	public String infoPorteur(@FormParam("nom") String _nom, @FormParam("prenom") String _prenom, @FormParam("plafond") int _plafond, @FormParam("numcarte") double _numCarte){
+		
+		System.out.println("Reception information porteur");
+		
+		Porteur p = new Porteur(_nom, _prenom, _plafond, _numCarte);
+		
+		
+		if(TransactionDao.getInstance().getWorkingTransaction() != null){
+			TransactionDao.getInstance().getWorkingTransaction().porteurIdent(p);
+		}
+		
+		// Changement d'etat correct 
+		if(TransactionDao.getInstance().getWorkingTransaction().getEtat() instanceof EtatPorteurIdent){
+			TransactionDao.getInstance().getWorkingTransaction().setPorteurTransaction(p);
+			return "Porteur pris en compte";
+		}
+		else{
+			return "Erreur etat";
+		}
+	}
+	
+	@POST
+	@Path("/DemandeAuto")
+	@Produces(MediaType.TEXT_PLAIN)
+	public String demandeAutorisation( @FormParam("pin") int pin ){
+		/*if(TransactionDao.getInstance().getWorkingTransaction() != null){
+			if(pin != 0){*/
+				TransactionDao.getInstance().getWorkingTransaction().demandeAuto(pin);
+		/*		return "Ok";
+			}
+			else{
+				TransactionDao.getInstance().getWorkingTransaction().demandeAuto(pin);
+				return "Ko";
+			}
+		}
+		else{
+			return null;
+		}*/
+		
+		return "Demande auto";
 	}
 	
 	@GET
-	@Path("/getTransaction")
+	@Path("/endtransaction")
+	@Produces(MediaType.TEXT_PLAIN)
+	public String endTransaction(){
+		
+		System.out.println("Transaction termin??");
+		
+		if(TransactionDao.getInstance().getWorkingTransaction() != null){
+			TransactionDao.getInstance().getWorkingTransaction().terminer();
+		}
+		return "Transaction terminé";
+	}
+	
+	@GET
+	@Path("/gettransaction")
 	@Produces(MediaType.APPLICATION_JSON)
 	public Transaction getTransaction(){
 		
-		System.out.println("Modification d'etat transaction");
+		System.out.println("Recuperation de la transaction");
 		
 		TransactionDao transDao = TransactionDao.getInstance();
 		
@@ -58,49 +146,6 @@ public class TransactionResources {
 		return transDao.getWorkingTransaction();
 	}
 	
-	/*@POST
-	@Path("/porteurTransaction")
-	@Produces(MediaType.TEXT_PLAIN)
-	public String porteurTransaction( String nom, String prenom, int plafond, int pin, double numCarte){
-		
-		System.out.println("Modification porteur");
-		
-		TransactionDao transDao = TransactionDao.getInstance();
-		
-		if(transDao.getWorkingTransaction() != null){
-			if(transDao.getWorkingTransaction().getPorteurTransaction() != null){
-				Porteur tempP = transDao.getWorkingTransaction().getPorteurTransaction();
-			
-				tempP.setNom(nom);
-				tempP.setPrenom(prenom);
-				tempP.setPin(pin);
-				tempP.setPlafond(plafond);
-				tempP.setNumCarte(numCarte);
-			}
-		}
-		
-		return "Ok porteur";
-	}*/
-	
-	@POST
-	@Path("/DemandeAuto")
-	@Produces(MediaType.TEXT_PLAIN)
-	public String demandeAutorisation( int pin ){
-		if(TransactionDao.getInstance().getWorkingTransaction() != null){
-			if(pin != 0){
-				TransactionDao.getInstance().getWorkingTransaction().setEtat(new EtatTransaction(1, "Transaction acceptée"));
-				return "Ok";
-			}
-			else{
-				TransactionDao.getInstance().getWorkingTransaction().setEtat(new EtatTransaction(1, "Transaction refusée"));
-				return "Ko";
-			}
-		}
-		else{
-			return null;
-		}
-		
-	}
 	
 	@GET
 	@Path("/getEtat")
@@ -114,10 +159,10 @@ public class TransactionResources {
 		return transDao.getWorkingTransaction().getEtat().getLabelEtat();
 	}
 	
-	@POST
+	/*@POST
 	@Path("/setEtat")
 	@Produces(MediaType.TEXT_PLAIN)
-	public String setEtat(String etat){
+	public String setEtat(@PathParam("etat") String etat){
 		
 		System.out.println("Modification d'etat transaction");
 		
@@ -128,7 +173,7 @@ public class TransactionResources {
 		System.out.println(transDao.getWorkingTransaction().getEtat().getLabelEtat());
 		
 		return transDao.getWorkingTransaction().getEtat().getLabelEtat();
-	}
+	}*/
 	
 	@GET
 	@Path("/getMontant")
@@ -144,18 +189,6 @@ public class TransactionResources {
 		return transDao.getWorkingTransaction().getMontant()+"";
 	}
 	
-	@GET
-	@Path("/endTransaction")
-	@Produces(MediaType.TEXT_PLAIN)
-	public String endTransaction(){
-		
-		System.out.println("Transaction termin??");
-		
-		if(TransactionDao.getInstance().getWorkingTransaction() != null){
-			TransactionDao.getInstance().getWorkingTransaction().setEtat(new EtatTransaction(10, "Transaction termin??"));
-		}
-		return "Transaction terminé";
-	}
 	
 	@GET
 	@Path("/resetTransaction")

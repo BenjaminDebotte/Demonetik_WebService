@@ -15,6 +15,21 @@ public class EtatTransaction {
 		this.labelEtat = _labelEtat;
 	}
 	
+	public EtatTransaction init(){
+		return this;
+	}
+	public EtatTransaction montant(int montant){
+		return this;
+	}
+	public EtatTransaction porteurIdent(Porteur p){
+		return this;
+	}
+	public EtatTransaction demandeAuto(int pin){
+		return this;
+	}
+	public EtatTransaction terminer(){
+		return this;
+	}
 	
 	// Getters & Setters
 	
