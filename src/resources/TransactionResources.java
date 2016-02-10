@@ -31,7 +31,7 @@ public class TransactionResources {
 	}
 	
 	@GET
-	@Path("/initTransaction")
+	@Path("/inittransaction")
 	@Produces(MediaType.TEXT_PLAIN)
 	public String initTransaction(){
 		
@@ -98,7 +98,7 @@ public class TransactionResources {
 	}
 	
 	@POST
-	@Path("/DemandeAuto")
+	@Path("/demandeauto")
 	@Produces(MediaType.TEXT_PLAIN)
 	public String demandeAutorisation( @FormParam("pin") int pin ){
 		/*if(TransactionDao.getInstance().getWorkingTransaction() != null){
@@ -123,7 +123,7 @@ public class TransactionResources {
 	@Produces(MediaType.TEXT_PLAIN)
 	public String endTransaction(){
 		
-		System.out.println("Transaction termin??");
+		System.out.println("Transaction terminé");
 		
 		if(TransactionDao.getInstance().getWorkingTransaction() != null){
 			TransactionDao.getInstance().getWorkingTransaction().terminer();
@@ -148,7 +148,7 @@ public class TransactionResources {
 	
 	
 	@GET
-	@Path("/getEtat")
+	@Path("/getetat")
 	@Produces(MediaType.TEXT_PLAIN)
 	public String getEtat(){
 		
@@ -176,7 +176,7 @@ public class TransactionResources {
 	}*/
 	
 	@GET
-	@Path("/getMontant")
+	@Path("/getmontant")
 	@Produces(MediaType.TEXT_PLAIN)
 	public String getMontant(){
 		
@@ -191,7 +191,7 @@ public class TransactionResources {
 	
 	
 	@GET
-	@Path("/resetTransaction")
+	@Path("/resettransaction")
 	@Produces(MediaType.TEXT_PLAIN)
 	public String resetTransaction(){
 		
@@ -201,7 +201,7 @@ public class TransactionResources {
 		
 		transDao.setWorkingTransaction(new Transaction());
 	
-		return "Transaction réinitialisé";
+		return "Transaction réinitialisée";
 	}
 	
 
