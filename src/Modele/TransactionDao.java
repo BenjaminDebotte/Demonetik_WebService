@@ -8,7 +8,7 @@ public class TransactionDao {
 	private Transaction workingTransaction;
 	
 	
-	public TransactionDao() {
+	private TransactionDao() {
 		
 	}
 	

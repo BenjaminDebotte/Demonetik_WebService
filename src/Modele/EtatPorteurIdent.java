@@ -5,7 +5,7 @@ public class EtatPorteurIdent extends EtatTransaction{
 	private Porteur porteurTransaction; 
 	
 	public EtatPorteurIdent(Porteur _porteur) {
-		super(3, "Information porteur reçu");
+		super(3, "Information porteur reçu", "Carte");
 		this.porteurTransaction = _porteur;
 	}
 	

@@ -3,6 +3,7 @@ package Modele;
 public class EtatTransaction {
 
 	private int numEtat;
+	private String type;
 	private String labelEtat;
 	
 	public EtatTransaction() {
@@ -10,9 +11,10 @@ public class EtatTransaction {
 		labelEtat = "Nouvelle transaction";
 	}
 
-	public EtatTransaction(int _numEtat, String _labelEtat){
+	public EtatTransaction(int _numEtat, String _labelEtat, String _type){
 		this.numEtat = _numEtat;
 		this.labelEtat = _labelEtat;
+		this.type = _type;
 	}
 	
 	public EtatTransaction init(){

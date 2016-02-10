@@ -15,6 +15,7 @@ import javax.ws.rs.core.Request;
 import javax.ws.rs.core.UriInfo;
 
 import Modele.*;
+import WebSocket.DemonetikSessionHandler;
 
 
 @Path("/transaction")
@@ -39,6 +40,11 @@ public class TransactionResources {
 		
 		TransactionDao.getInstance().getWorkingTransaction().init();
 				
+		//Envoi aux clients d'écoute
+		int numEtat = TransactionDao.getInstance().getWorkingTransaction().getEtat().getNumEtat();
+		String message = "{'numEtat':'"+numEtat+"'}";
+		DemonetikSessionHandler.getInstance().sendEtatToSessions(message);
+		
 		if(TransactionDao.getInstance().getWorkingTransaction().getEtat() instanceof EtatInit){
 			return "Initiation pris en compte";
 		}
@@ -61,6 +67,12 @@ public class TransactionResources {
 				}
 				if(TransactionDao.getInstance().getWorkingTransaction().getEtat() instanceof EtatMontant){
 					TransactionDao.getInstance().getWorkingTransaction().setMontant(montant);
+					
+					//Envoi aux clients d'écoute
+					int numEtat = TransactionDao.getInstance().getWorkingTransaction().getEtat().getNumEtat();
+					String message = "{'numEtat':'"+numEtat+"'}";
+					DemonetikSessionHandler.getInstance().sendEtatToSessions(message);
+					
 					return "Montant pris en compte";
 				}
 				else{
@@ -149,14 +161,14 @@ public class TransactionResources {
 	
 	@GET
 	@Path("/getetat")
-	@Produces(MediaType.TEXT_PLAIN)
-	public String getEtat(){
+	@Produces(MediaType.APPLICATION_JSON)
+	public EtatTransaction getEtat(){
 		
 		System.out.println("Demande d'etat transaction");
 		
 		TransactionDao transDao = TransactionDao.getInstance();	
 		
-		return transDao.getWorkingTransaction().getEtat().getLabelEtat();
+		return transDao.getWorkingTransaction().getEtat();
 	}
 	
 	/*@POST

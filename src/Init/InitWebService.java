@@ -27,6 +27,17 @@ public class InitWebService implements ServletContextListener{
 		transDao.setWorkingTransaction(new Transaction());
 		
 		
+		/*Server server = new Server(8080);
+        WebSocketHandler wsHandler = new WebSocketHandler() {
+            @Override
+            public void configure(WebSocketServletFactory factory) {
+                factory.register(MyWebSocketHandler.class);
+            }
+        };
+        server.setHandler(wsHandler);
+        server.start();
+        server.join();*/
+		
 
 		
 	}
