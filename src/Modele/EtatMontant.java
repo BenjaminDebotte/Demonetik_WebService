@@ -5,7 +5,7 @@ public class EtatMontant extends EtatTransaction{
 	private int montant;
 	
 	public EtatMontant(int _montant){
-		super(0, "Montant de la transaction saisie", "TPE");
+		super(2, "Montant de la transaction saisie", "TPE");
 		this.montant = _montant;
 	}
 

@@ -42,7 +42,9 @@ public class TransactionResources {
 				
 		//Envoi aux clients d'écoute
 		int numEtat = TransactionDao.getInstance().getWorkingTransaction().getEtat().getNumEtat();
-		String message = "{'numEtat':'"+numEtat+"'}";
+		String libelleEtat = TransactionDao.getInstance().getWorkingTransaction().getEtat().getLabelEtat();
+		String typeEtat = TransactionDao.getInstance().getWorkingTransaction().getEtat().getType();
+		String message = "{\"numEtat\":\""+numEtat+"\",\"libelle\":\""+libelleEtat+"\", \"type\":\""+typeEtat+"\"}";
 		DemonetikSessionHandler.getInstance().sendEtatToSessions(message);
 		
 		if(TransactionDao.getInstance().getWorkingTransaction().getEtat() instanceof EtatInit){
@@ -70,7 +72,9 @@ public class TransactionResources {
 					
 					//Envoi aux clients d'écoute
 					int numEtat = TransactionDao.getInstance().getWorkingTransaction().getEtat().getNumEtat();
-					String message = "{'numEtat':'"+numEtat+"'}";
+					String libelleEtat = TransactionDao.getInstance().getWorkingTransaction().getEtat().getLabelEtat();
+					String typeEtat = TransactionDao.getInstance().getWorkingTransaction().getEtat().getType();
+					String message = "{\"numEtat\":\""+numEtat+"\",\"libelle\":\""+libelleEtat+"\", \"type\":\""+typeEtat+"\"}";
 					DemonetikSessionHandler.getInstance().sendEtatToSessions(message);
 					
 					return "Montant pris en compte";
@@ -102,6 +106,14 @@ public class TransactionResources {
 		// Changement d'etat correct 
 		if(TransactionDao.getInstance().getWorkingTransaction().getEtat() instanceof EtatPorteurIdent){
 			TransactionDao.getInstance().getWorkingTransaction().setPorteurTransaction(p);
+			
+			//Envoi aux clients d'écoute
+			int numEtat = TransactionDao.getInstance().getWorkingTransaction().getEtat().getNumEtat();
+			String libelleEtat = TransactionDao.getInstance().getWorkingTransaction().getEtat().getLabelEtat();
+			String typeEtat = TransactionDao.getInstance().getWorkingTransaction().getEtat().getType();
+			String message = "{\"numEtat\":\""+numEtat+"\",\"libelle\":\""+libelleEtat+"\", \"type\":\""+typeEtat+"\"}";
+			DemonetikSessionHandler.getInstance().sendEtatToSessions(message);
+			
 			return "Porteur pris en compte";
 		}
 		else{
@@ -113,9 +125,28 @@ public class TransactionResources {
 	@Path("/demandeauto")
 	@Produces(MediaType.TEXT_PLAIN)
 	public String demandeAutorisation( @FormParam("pin") int pin ){
+		
+		
+		System.out.println("Reception demande d'autorisation");
+		
 		/*if(TransactionDao.getInstance().getWorkingTransaction() != null){
 			if(pin != 0){*/
 				TransactionDao.getInstance().getWorkingTransaction().demandeAuto(pin);
+				
+				if(TransactionDao.getInstance().getWorkingTransaction().getEtat() instanceof EtatDemandeAuto){
+					//Envoi aux clients d'écoute
+					int numEtat = TransactionDao.getInstance().getWorkingTransaction().getEtat().getNumEtat();
+					String libelleEtat = TransactionDao.getInstance().getWorkingTransaction().getEtat().getLabelEtat();
+					String typeEtat = TransactionDao.getInstance().getWorkingTransaction().getEtat().getType();
+					String message = "{\"numEtat\":\""+numEtat+"\",\"libelle\":\""+libelleEtat+"\", \"type\":\""+typeEtat+"\"}";
+					DemonetikSessionHandler.getInstance().sendEtatToSessions(message);
+					
+					return "Ok";
+				}
+				else{
+					return "Ko";
+				}
+				
 		/*		return "Ok";
 			}
 			else{
@@ -127,7 +158,6 @@ public class TransactionResources {
 			return null;
 		}*/
 		
-		return "Demande auto";
 	}
 	
 	@GET
@@ -139,6 +169,18 @@ public class TransactionResources {
 		
 		if(TransactionDao.getInstance().getWorkingTransaction() != null){
 			TransactionDao.getInstance().getWorkingTransaction().terminer();
+			
+			if(TransactionDao.getInstance().getWorkingTransaction().getEtat() instanceof EtatFinTransaction){
+				//Envoi aux clients d'écoute
+				int numEtat = TransactionDao.getInstance().getWorkingTransaction().getEtat().getNumEtat();
+				String libelleEtat = TransactionDao.getInstance().getWorkingTransaction().getEtat().getLabelEtat();
+				String typeEtat = TransactionDao.getInstance().getWorkingTransaction().getEtat().getType();
+				String message = "{\"numEtat\":\""+numEtat+"\",\"libelle\":\""+libelleEtat+"\", \"type\":\""+typeEtat+"\"}";
+				DemonetikSessionHandler.getInstance().sendEtatToSessions(message);
+			}
+			else{
+				return "Erreur etat";
+			}
 		}
 		return "Transaction terminé";
 	}

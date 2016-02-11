@@ -50,6 +50,16 @@ public class EtatTransaction {
 	public void setLabelEtat(String labelEtat) {
 		this.labelEtat = labelEtat;
 	}
+
+	public String getType() {
+		return type;
+	}
+
+	public void setType(String type) {
+		this.type = type;
+	}
+	
+	
 	
 
 }
