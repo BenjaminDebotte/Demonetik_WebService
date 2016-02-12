@@ -10,7 +10,7 @@ public class EtatPorteurIdent extends EtatTransaction{
 	}
 	
 	public EtatTransaction demandeAuto(int pin){
-		return new EtatDemandeAuto(pin);
+		return new EtatDemandeAutoAsk(pin);
 	}
 
 	public Porteur getPorteurTransaction() {

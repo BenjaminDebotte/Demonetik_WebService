@@ -29,6 +29,12 @@ public class EtatTransaction {
 	public EtatTransaction demandeAuto(int pin){
 		return this;
 	}
+	public EtatTransaction processDemandeAuto(){
+		return this;
+	}
+	public EtatTransaction resultatDemandeAuto(int resultat){
+		return this;
+	}
 	public EtatTransaction terminer(){
 		return this;
 	}
