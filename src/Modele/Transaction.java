@@ -1,16 +1,20 @@
 package Modele;
 
+import javax.xml.bind.annotation.XmlRootElement;
+
+@XmlRootElement
 public class Transaction {
 
 	private int numTransaction;
 	private EtatTransaction etat = new EtatStart();
 	private int montant;
 	private Porteur porteurTransaction;
+	private int resultatTransaction;
 	
 	public Transaction() {
 		numTransaction = 0;
 		etat = new EtatStart();
-		montant = 0;
+		montant = -1;
 		porteurTransaction = new Porteur();
 	}
 	
@@ -35,6 +39,13 @@ public class Transaction {
 	}
 	public void demandeAuto(int pin){
 		etat = etat.demandeAuto(pin);
+	}
+	public void processDemandeAuto(){
+		etat = etat.processDemandeAuto();
+	}
+	public void resultatDemandeAuto(int resultat){
+		etat = etat.resultatDemandeAuto(resultat);
+		resultatTransaction = resultat;
 	}
 	public void terminer(){
 		etat = etat.terminer();
@@ -69,5 +80,15 @@ public class Transaction {
 	public void setPorteurTransaction(Porteur porteurTransaction) {
 		this.porteurTransaction = porteurTransaction;
 	}
+
+	public int getResultatTransaction() {
+		return resultatTransaction;
+	}
+
+	public void setResultatTransaction(int resultatTransaction) {
+		this.resultatTransaction = resultatTransaction;
+	}
+	
+	
 	
 }

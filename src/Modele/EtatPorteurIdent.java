@@ -1,11 +1,13 @@
 package Modele;
 
+import java.util.ResourceBundle;
+
 public class EtatPorteurIdent extends EtatTransaction{
 
 	private Porteur porteurTransaction; 
 	
 	public EtatPorteurIdent(Porteur _porteur) {
-		super(3, "Information porteur reçu", "Carte");
+		super(3, ResourceBundle.getBundle("stringEtat").getString("3"), "Carte");
 		this.porteurTransaction = _porteur;
 	}
 	
@@ -13,6 +15,8 @@ public class EtatPorteurIdent extends EtatTransaction{
 		return new EtatDemandeAutoAsk(pin);
 	}
 
+	// Getters & Setters
+	
 	public Porteur getPorteurTransaction() {
 		return porteurTransaction;
 	}

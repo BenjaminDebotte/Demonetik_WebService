@@ -5,16 +5,16 @@ public class Porteur {
 	private String nom;
 	private String prenom;
 	private int plafond;
-	private int pin;
+	private String pin;
 	private String numCarte;
 	
 	
 	public Porteur(){
-		nom = "Federer";
-		prenom = "Roger";
-		plafond = 1000000;
-		pin = 1234;
-		numCarte = "1234678912345678";
+		nom = "";
+		prenom = "";
+		plafond = 0;
+		pin = "";
+		numCarte = "0";
 	}
 	
 	public Porteur(String _nom, String _prenom, int _plafond, String _numCarte) {
@@ -51,11 +51,11 @@ public class Porteur {
 		this.plafond = plafond;
 	}
 
-	public int getPin() {
+	public String getPin() {
 		return pin;
 	}
 
-	public void setPin(int pin) {
+	public void setPin(String pin) {
 		this.pin = pin;
 	}
 

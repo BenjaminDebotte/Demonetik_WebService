@@ -1,7 +1,10 @@
 package resources;
 
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.util.LinkedList;
 
+import javax.swing.Timer;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.FormParam;
 import javax.ws.rs.GET;
@@ -14,10 +17,18 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Request;
 import javax.ws.rs.core.UriInfo;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.ObjectWriter;
+
 import Modele.*;
 import WebSocket.DemonetikSessionHandler;
 
-
+/**
+ * Classe interface du WebService
+ * @author emerikbedouin
+ *
+ */
 @Path("/transaction")
 public class TransactionResources {
 
@@ -31,6 +42,10 @@ public class TransactionResources {
 		// TODO Auto-generated constructor stub
 	}
 	
+	/**
+	 * Initialisation la transaction en cours
+	 * @return 
+	 */
 	@GET
 	@Path("/inittransaction")
 	@Produces(MediaType.TEXT_PLAIN)
@@ -40,7 +55,7 @@ public class TransactionResources {
 		
 		if(TransactionDao.getInstance().getWorkingTransaction().getEtat() instanceof EtatInit){
 			System.out.println("[ETAT] Initiation d'une nouvelle transaction");
-			majClientEtat();
+			majClientWebSocket();
 			return "Initiation pris en compte";
 		}
 		else{
@@ -65,7 +80,7 @@ public class TransactionResources {
 					System.out.println("[ETAT] Reception du montant de la transaction "+montant);
 					TransactionDao.getInstance().getWorkingTransaction().setMontant(montant);
 					
-					majClientEtat();
+					majClientWebSocket();
 					
 					return "Montant pris en compte";
 				}
@@ -83,27 +98,33 @@ public class TransactionResources {
 	@POST
 	@Path("/infoporteur")
 	@Produces(MediaType.TEXT_PLAIN)
-	public String infoPorteur(@FormParam("nom") String _nom, @FormParam("prenom") String _prenom, @FormParam("numcarte") String _numCarte){
-		
-		Porteur p = new Porteur(_nom, _prenom, 0, _numCarte);
-		
-		
-		if(TransactionDao.getInstance().getWorkingTransaction() != null){
-			TransactionDao.getInstance().getWorkingTransaction().porteurIdent(p);
-		}
-		
-		// Changement d'etat correct 
-		if(TransactionDao.getInstance().getWorkingTransaction().getEtat() instanceof EtatPorteurIdent){
-			System.out.println("[ETAT] Reception information porteur");
-			TransactionDao.getInstance().getWorkingTransaction().setPorteurTransaction(p);
+	public String infoPorteur(@FormParam("nom") String nom, @FormParam("prenom") String _prenom, @FormParam("numcarte") String _numCarte){
+		System.out.println("nom: "+nom+" prenom : "+_prenom+" numcarte : "+_numCarte);
+		if(nom != null && _prenom != null && _numCarte != null){
+			Porteur p = new Porteur(nom, _prenom, 0, _numCarte);
 			
-			majClientEtat();
 			
-			return "Porteur pris en compte";
+			if(TransactionDao.getInstance().getWorkingTransaction() != null){
+				TransactionDao.getInstance().getWorkingTransaction().porteurIdent(p);
+			}
+			
+			// Changement d'etat correct 
+			if(TransactionDao.getInstance().getWorkingTransaction().getEtat() instanceof EtatPorteurIdent){
+				System.out.println("[ETAT] Reception information porteur");
+				TransactionDao.getInstance().getWorkingTransaction().setPorteurTransaction(p);
+				
+				majClientWebSocket();
+				
+				return "Porteur pris en compte";
+			}
+			else{
+				System.out.println("[ERROR] Erreur d'etat : Envoi de données porteur");
+				return "Erreur etat";
+			}
 		}
 		else{
-			System.out.println("[ERROR] Erreur d'etat : Envoi de données porteur");
-			return "Erreur etat";
+			System.out.println("[ERROR] Erreur d'etat : Envoi de données porteur incorrect");
+			return "Erreur donnée porteur";
 		}
 	}
 	
@@ -113,34 +134,43 @@ public class TransactionResources {
 	public String demandeAutorisation( @FormParam("pin") int pin ){
 		
 		
-		/*if(TransactionDao.getInstance().getWorkingTransaction() != null){
-			if(pin != 0){*/
-				TransactionDao.getInstance().getWorkingTransaction().demandeAuto(pin);
+		TransactionDao.getInstance().getWorkingTransaction().demandeAuto(pin);
 				
-				if(TransactionDao.getInstance().getWorkingTransaction().getEtat() instanceof EtatDemandeAutoAsk){
-					System.out.println("Reception demande d'autorisation");
-					majClientEtat();
+		if(TransactionDao.getInstance().getWorkingTransaction().getEtat() instanceof EtatDemandeAutoAsk){
+			System.out.println("Reception demande d'autorisation");
+			majClientWebSocket();
 					
-					//Traitement de la demande d'auto par la banque
-					authoRequestProcessing();
-					
-					return "Ok";
-				}
-				else{
-					System.out.println("Erreur d'etat : Reception demande d'autorisation");
-					return "Ko";
-				}
-				
-		/*		return "Ok";
-			}
-			else{
-				TransactionDao.getInstance().getWorkingTransaction().demandeAuto(pin);
-				return "Ko";
-			}
+			//Traitement de la demande d'auto par la banque
+			TransactionDao.getInstance().getWorkingTransaction().processDemandeAuto();
+			if(TransactionDao.getInstance().getWorkingTransaction().getEtat() instanceof EtatDemandeAutoProcess){
+				System.out.println("[ETAT] Processing de la demande d'autorisation");
+				majClientWebSocket();
+			}		
+			return "Ok";
 		}
 		else{
-			return null;
-		}*/
+			System.out.println("[ERROR] Erreur d'etat : Reception demande d'autorisation");
+			return "Ko";
+		}
+		
+	}
+	
+	@GET
+	@Path("/demandeautoresultat")
+	@Produces(MediaType.TEXT_PLAIN)
+	public int demandeAutorisationResultat(){
+		
+		TransactionDao.getInstance().getWorkingTransaction().resultatDemandeAuto(1);
+		
+		if(TransactionDao.getInstance().getWorkingTransaction().getEtat() instanceof EtatDemandeAutoRes){
+			System.out.println("[ETAT] Demande d'autorisation traité");
+			majClientWebSocket();
+		}
+		else{
+			System.out.println("[ERROR] Erreur d'etat : resultat demande d'autorisation");
+		}
+		
+		return TransactionDao.getInstance().getWorkingTransaction().getResultatTransaction();
 		
 	}
 	
@@ -156,7 +186,7 @@ public class TransactionResources {
 			
 			if(TransactionDao.getInstance().getWorkingTransaction().getEtat() instanceof EtatFinTransaction){
 				System.out.println("[ETAT] Transaction terminé");
-				majClientEtat();
+				majClientWebSocket();
 			}
 			else{
 				System.out.println("[ERROR] Erreur d'etat : Transaction terminé");
@@ -166,6 +196,10 @@ public class TransactionResources {
 		return "Transaction terminé";
 	}
 	
+	/**
+	 * Renvoi la transaction en cours
+	 * @return
+	 */
 	@GET
 	@Path("/gettransaction")
 	@Produces(MediaType.APPLICATION_JSON)
@@ -181,7 +215,10 @@ public class TransactionResources {
 		return transDao.getWorkingTransaction();
 	}
 	
-	
+	/**
+	 * Renvoi l'etat de la transacton en cours
+	 * @return
+	 */
 	@GET
 	@Path("/getetat")
 	@Produces(MediaType.APPLICATION_JSON)
@@ -210,6 +247,10 @@ public class TransactionResources {
 		return transDao.getWorkingTransaction().getEtat().getLabelEtat();
 	}*/
 	
+	/**
+	 * Renvoi le montant de la transaction actuel
+	 * @return
+	 */
 	@GET
 	@Path("/getmontant")
 	@Produces(MediaType.TEXT_PLAIN)
@@ -224,7 +265,10 @@ public class TransactionResources {
 		return transDao.getWorkingTransaction().getMontant()+"";
 	}
 	
-	
+	/**
+	 * Réinitianalise la transaction en cours
+	 * @return
+	 */
 	@GET
 	@Path("/resettransaction")
 	@Produces(MediaType.TEXT_PLAIN)
@@ -236,57 +280,98 @@ public class TransactionResources {
 		
 		transDao.setWorkingTransaction(new Transaction());
 		
-		majClientEtat();
+		majClientWebSocket();
 		
 	
 		return "Transaction réinitialisée";
 	}
 	
-	public void majClientEtat(){
-		//Envoi aux clients d'écoute
-		int numEtat = TransactionDao.getInstance().getWorkingTransaction().getEtat().getNumEtat();
-		String libelleEtat = TransactionDao.getInstance().getWorkingTransaction().getEtat().getLabelEtat();
-		String typeEtat = TransactionDao.getInstance().getWorkingTransaction().getEtat().getType();
-		String message = "{\"numEtat\":\""+numEtat+"\",\"libelle\":\""+libelleEtat+"\", \"type\":\""+typeEtat+"\"}";
+	/**
+	 * Envoi à chaque client connecté au websocket l'etat actuel de la transaction
+	 */
+	public void majClientWebSocket(){
+		
+		String message = "";
+		try {
+			
+			ObjectMapper mapper = new ObjectMapper();
+			message = mapper.writeValueAsString(TransactionDao.getInstance().getWorkingTransaction().getEtat());
+			
+		} catch (JsonProcessingException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		System.out.println(message);
 		DemonetikSessionHandler.getInstance().sendEtatToSessions(message);
 	}
 	
+	
+	// Deprecated --------------------------------------------------------------------------------------
+	
+	/**
+	 * Simule le traitement d'une demande d'autorisation
+	 * @return
+	 */
 	public int authoRequestProcessing(){
 		
-		TransactionDao.getInstance().getWorkingTransaction().getEtat().processDemandeAuto();
+		TransactionDao.getInstance().getWorkingTransaction().processDemandeAuto();
 		
 		if(TransactionDao.getInstance().getWorkingTransaction().getEtat() instanceof EtatDemandeAutoProcess){
 			System.out.println("[ETAT] Processing de la demande d'autorisation");
-			majClientEtat();
-			ThreadAuthoRequest threadAutho = new ThreadAuthoRequest();
-			threadAutho.run();
+			majClientWebSocket();
 			
-			if(TransactionDao.getInstance().getWorkingTransaction().getEtat() instanceof EtatDemandeAutoRes){
-				System.out.println("[ETAT] Demande d'autorisation traité");
-				majClientEtat();
-			}
+			Timer timer = new Timer(3000, new ActionListener() {
+				public void actionPerformed(ActionEvent e) {
+					TransactionDao.getInstance().getWorkingTransaction().resultatDemandeAuto(1);
+					
+					if(TransactionDao.getInstance().getWorkingTransaction().getEtat() instanceof EtatDemandeAutoRes){
+						TransactionDao.getInstance().getWorkingTransaction().setResultatTransaction(1);
+						System.out.println("[ETAT] Demande d'autorisation traité");
+						majClientWebSocket();
+					}
+					else{
+						System.out.println("[ERROR] Erreur d'etat : resultat demande d'autorisation");
+					}
+					
+				}
+			});
+			timer.setRepeats(false);
+			timer.start();
 			
-			return 1;
+			return TransactionDao.getInstance().getWorkingTransaction().getResultatTransaction();
 		}
 		else{
+			System.out.println("[ERROR] Erreur d'etat : Processing de la demande d'autorisation");
 			return 0;
 		}
 		
 	}
 	
+	/**
+	 * Classe implémentant l'interface runnable pour simuler une transaction en parallèle du thread principal
+	 * @author emerikbedouin
+	 *
+	 */
 	private class ThreadAuthoRequest implements Runnable{
 
-		
 		public void run() {
 			
 			try {
-				Thread.sleep(2000);
-				TransactionDao.getInstance().getWorkingTransaction().getEtat().resultatDemandeAuto(1);
+				Thread.sleep(4000);
+				TransactionDao.getInstance().getWorkingTransaction().resultatDemandeAuto(1);
 				
+				if(TransactionDao.getInstance().getWorkingTransaction().getEtat() instanceof EtatDemandeAutoRes){
+					System.out.println("[ETAT] Demande d'autorisation traité");
+					majClientWebSocket();
+				}
+				else{
+					System.out.println("[ERROR] Erreur d'etat : resultat demande d'autorisation");
+				}
 				
 			} catch (InterruptedException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
+				System.out.println("Catch exception threadAuthoRequest : "+e.getMessage());
 			}
 			
 		}

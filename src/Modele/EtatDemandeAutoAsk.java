@@ -1,11 +1,13 @@
 package Modele;
 
+import java.util.ResourceBundle;
+
 public class EtatDemandeAutoAsk extends EtatTransaction{
 
 	private int pin;
 	
 	public EtatDemandeAutoAsk(int _pin) {
-		super(4, "Demande autorisation reçu", "TPE");
+		super(4, ResourceBundle.getBundle("stringEtat").getString("4"), "TPE");
 		this.pin = _pin;
 	}
 

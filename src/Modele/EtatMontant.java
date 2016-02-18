@@ -1,11 +1,13 @@
 package Modele;
 
+import java.util.ResourceBundle;
+
 public class EtatMontant extends EtatTransaction{
 
 	private int montant;
 	
 	public EtatMontant(int _montant){
-		super(2, "Montant de la transaction saisie", "TPE");
+		super(2, ResourceBundle.getBundle("stringEtat").getString("2"), "TPE");
 		this.montant = _montant;
 	}
 
