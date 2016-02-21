@@ -2,6 +2,11 @@ package Modele;
 
 import javax.xml.bind.annotation.XmlRootElement;
 
+/**
+ * Classe représenant une transaction
+ * @author emerikbedouin
+ *
+ */
 @XmlRootElement
 public class Transaction {
 
@@ -26,7 +31,7 @@ public class Transaction {
 	}
 
 	
-	//Etat
+	// Fonction de passage d'un Etat à un autre
 	
 	public void init(){
 		etat = etat.init();

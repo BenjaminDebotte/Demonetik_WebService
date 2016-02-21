@@ -1,7 +1,11 @@
 package Modele;
 
 import java.util.ResourceBundle;
-
+/**
+ * Classe réprésentant l'état de reception des informatios porteurs
+ * @author emerikbedouin
+ *
+ */
 public class EtatPorteurIdent extends EtatTransaction{
 
 	private Porteur porteurTransaction; 
@@ -11,6 +15,9 @@ public class EtatPorteurIdent extends EtatTransaction{
 		this.porteurTransaction = _porteur;
 	}
 	
+	/**
+	 * Passage à l'etat de demande d'autorisation
+	 */
 	public EtatTransaction demandeAuto(int pin){
 		return new EtatDemandeAutoAsk(pin);
 	}

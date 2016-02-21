@@ -3,7 +3,11 @@ package Modele;
 import javax.xml.bind.annotation.XmlRootElement;
 
 import com.sun.xml.internal.txw2.annotation.XmlElement;
-
+/**
+ * UNUSED & DEPRECATED
+ * @author emerikbedouin
+ *
+ */
 @XmlRootElement
 public class StateMessage {
 

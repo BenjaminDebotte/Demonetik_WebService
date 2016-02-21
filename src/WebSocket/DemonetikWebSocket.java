@@ -34,23 +34,13 @@ public class DemonetikWebSocket{
 		System.out.println("Connexion au websocket demonetik");
 		sessionHandler.getListSession().add(session);
 		
-		/*final RemoteEndpoint.Basic remote = session.getBasicRemote();
-		session.addMessageHandler(new MessageHandler.Whole<String>() {
-
-			public void onMessage(String text) {
-	
-				try {
 		
-					remote.sendText(ThreadSafeFormatter.getDateFormatter().format(new Date())+ " (MonEchoEndPoint) " + text);
-		
-				} 
-				catch (IOException ioe) {
-		
-					System.out.println("Erreur lors de l'ouverture de connexion au websocket");
-				}
-			}
-		});*/
-		
+		/*try {
+			session.getBasicRemote().sendText("Connexion réussi");
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}*/
 	}
 	
 	@OnMessage

@@ -20,25 +20,12 @@ public class InitWebService implements ServletContextListener{
 
 	
 	public void contextInitialized(ServletContextEvent arg0) {
+		
 		System.out.println("INIT du Web Service Demonetik");
 		
-		TransactionDao transDao = TransactionDao.getInstance();
-		
+		// Création de l'instance de la transaction
+		TransactionDao transDao = TransactionDao.getInstance();		
 		transDao.setWorkingTransaction(new Transaction());
-		
-		
-		/*Server server = new Server(8080);
-        WebSocketHandler wsHandler = new WebSocketHandler() {
-            @Override
-            public void configure(WebSocketServletFactory factory) {
-                factory.register(MyWebSocketHandler.class);
-            }
-        };
-        server.setHandler(wsHandler);
-        server.start();
-        server.join();*/
-		
-
 		
 	}
 

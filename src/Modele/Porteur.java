@@ -1,5 +1,10 @@
 package Modele;
 
+/**
+ * Classe réprésentant un porteur lors d'une transaction
+ * @author emerikbedouin
+ *
+ */
 public class Porteur {
 
 	private String nom;

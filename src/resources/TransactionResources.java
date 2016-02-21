@@ -64,6 +64,11 @@ public class TransactionResources {
 		}
 	}
 	
+	/**
+	 * Transmission de la transaction en cours
+	 * @param montant
+	 * @return
+	 */
 	@POST
 	@Path("/montant")
 	//@Consumes("text/plain")
@@ -95,9 +100,17 @@ public class TransactionResources {
 		}
 	}
 	
+	
+	/**
+	 * Transmission des informations porteur
+	 * @param nom
+	 * @param _prenom
+	 * @param _numCarte
+	 * @return
+	 */
 	@POST
 	@Path("/infoporteur")
-	@Produces(MediaType.TEXT_PLAIN)
+	@Produces(MediaType.TEXT_PLAIN)	
 	public String infoPorteur(@FormParam("nom") String nom, @FormParam("prenom") String _prenom, @FormParam("numcarte") String _numCarte){
 		System.out.println("nom: "+nom+" prenom : "+_prenom+" numcarte : "+_numCarte);
 		if(nom != null && _prenom != null && _numCarte != null){
@@ -128,6 +141,12 @@ public class TransactionResources {
 		}
 	}
 	
+	
+	/**
+	 * Emission d'une demande d'autorisation
+	 * @param pin
+	 * @return
+	 */
 	@POST
 	@Path("/demandeauto")
 	@Produces(MediaType.TEXT_PLAIN)
@@ -155,6 +174,11 @@ public class TransactionResources {
 		
 	}
 	
+	
+	/**
+	 * Demande du resultat de la demande d'autorisation
+	 * @return
+	 */
 	@GET
 	@Path("/demandeautoresultat")
 	@Produces(MediaType.TEXT_PLAIN)
@@ -174,6 +198,11 @@ public class TransactionResources {
 		
 	}
 	
+	
+	/**
+	 * Termine la transaction en cours
+	 * @return
+	 */
 	@GET
 	@Path("/endtransaction")
 	@Produces(MediaType.TEXT_PLAIN)
@@ -196,6 +225,7 @@ public class TransactionResources {
 		return "Transaction terminé";
 	}
 	
+	
 	/**
 	 * Renvoi la transaction en cours
 	 * @return
@@ -215,6 +245,7 @@ public class TransactionResources {
 		return transDao.getWorkingTransaction();
 	}
 	
+	
 	/**
 	 * Renvoi l'etat de la transacton en cours
 	 * @return
@@ -231,21 +262,6 @@ public class TransactionResources {
 		return transDao.getWorkingTransaction().getEtat();
 	}
 	
-	/*@POST
-	@Path("/setEtat")
-	@Produces(MediaType.TEXT_PLAIN)
-	public String setEtat(@PathParam("etat") String etat){
-		
-		System.out.println("Modification d'etat transaction");
-		
-		TransactionDao transDao = TransactionDao.getInstance();
-		
-		transDao.getWorkingTransaction().setEtat(new EtatTransaction(1,etat));
-		
-		System.out.println(transDao.getWorkingTransaction().getEtat().getLabelEtat());
-		
-		return transDao.getWorkingTransaction().getEtat().getLabelEtat();
-	}*/
 	
 	/**
 	 * Renvoi le montant de la transaction actuel
@@ -265,6 +281,7 @@ public class TransactionResources {
 		return transDao.getWorkingTransaction().getMontant()+"";
 	}
 	
+	
 	/**
 	 * Réinitianalise la transaction en cours
 	 * @return
@@ -274,7 +291,7 @@ public class TransactionResources {
 	@Produces(MediaType.TEXT_PLAIN)
 	public String resetTransaction(){
 		
-		System.out.println("Transaction reset");
+		System.out.println("[!][RESET] Transaction reset");
 		
 		TransactionDao transDao = TransactionDao.getInstance();
 		
@@ -285,6 +302,7 @@ public class TransactionResources {
 	
 		return "Transaction réinitialisée";
 	}
+	
 	
 	/**
 	 * Envoi à chaque client connecté au websocket l'etat actuel de la transaction
@@ -346,6 +364,7 @@ public class TransactionResources {
 		}
 		
 	}
+	
 	
 	/**
 	 * Classe implémentant l'interface runnable pour simuler une transaction en parallèle du thread principal
